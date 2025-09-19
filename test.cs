@@ -23,6 +23,18 @@ namespace Inlämningsuppgift_2
             if (db.Length == 0) { WriteToFile("[]"); }
         }
 
+        private void PrintStatistics(int level, Seller[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                DataLabel.Text += $"Namn: {array[i].Name}\nPersonnummer: {array[i].Pnr}\nDistrikt: {array[i].District}\nSålda Artiklar: {array[i].SoldArticles}\n\n";
+                if (i == array.Length - 1)
+                {
+                    DataLabel.Text += $"{array.Length} Säljare har nått nivå {level}: över 199 Artiklar\n\n";
+                }
+            }
+        }
+
         private string ReadFile()
         {
             return File.ReadAllText("db.json");
@@ -97,30 +109,15 @@ namespace Inlämningsuppgift_2
         {
             string db = ReadFile();
             Seller[] dbArray = JsonConvert.DeserializeObject<Seller[]>(db);
-            /*for (int i = 0;  i < dbArray.Length; i++)
-            {
-                int sellerLevel = SellerLevel(dbArray[i].SoldArticles);
-                DataLabel.Text += $"Namn: {dbArray[i].Name}\nPersonnummer: {dbArray[i].Pnr}\nDistrikt: {dbArray[i].District}\nSålda Artiklar: {dbArray[i].SoldArticles}\n\n";
-            }*/
+            Array.Sort(dbArray, (a, b) => b.SoldArticles - a.SoldArticles);
             Seller[] level4Array = Array.FindAll(dbArray, x => SellerLevel(x.SoldArticles) == 4);
-            for (int i = 0; i < level4Array.Length; i++)
-            {
-                DataLabel.Text += $"Namn: {level4Array[i].Name}\nPersonnummer: {level4Array[i].Pnr}\nDistrikt: {level4Array[i].District}\nSålda Artiklar: {level4Array[i].SoldArticles}\n\n";
-                if (i == level4Array.Length - 1)
-                {
-                    DataLabel.Text += $"{level4Array.Length} Säljare har nått nivå 4: över 199 Artiklar\n\n";
-                }
-            }
-
+            PrintStatistics(4, level4Array);
             Seller[] level3Array = Array.FindAll(dbArray, x => SellerLevel(x.SoldArticles) == 3);
-            for (int i = 0; i < level3Array.Length; i++)
-            {
-                DataLabel.Text += $"Namn: {level3Array[i].Name}\nPersonnummer: {level3Array[i].Pnr}\nDistrikt: {level3Array[i].District}\nSålda Artiklar: {level3Array[i].SoldArticles}\n\n";
-                if (i == level3Array.Length - 1)
-                {
-                    DataLabel.Text += $"{level3Array.Length} Säljare har nått nivå 3: 100-199 Artiklar\n\n";
-                }
-            }
+            PrintStatistics(3, level3Array);
+            Seller[] level2Array = Array.FindAll(dbArray, x => SellerLevel(x.SoldArticles) == 2);
+            PrintStatistics(2, level2Array);
+            Seller[] level1Array = Array.FindAll(dbArray, x => SellerLevel(x.SoldArticles) == 1);
+            PrintStatistics(1, level1Array);
         }
     }
 
