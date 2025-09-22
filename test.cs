@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing.Text;
-using System.Text.Json;
 using Newtonsoft.Json;
 
+//Neo Göl Dahlgren, neogoldahlgren@gmail.com, L0002B, Inlämningsuppgift 2
 namespace Inlämningsuppgift_2
 {
     public partial class Form1 : Form
@@ -30,7 +30,7 @@ namespace Inlämningsuppgift_2
                 DataLabel.Text += $"Namn: {array[i].Name}\nPersonnummer: {array[i].Pnr}\nDistrikt: {array[i].District}\nSålda Artiklar: {array[i].SoldArticles}\n\n";
                 if (i == array.Length - 1)
                 {
-                    DataLabel.Text += $"{array.Length} Säljare har nått nivå {level}: över 199 Artiklar\n\n";
+                    DataLabel.Text += $"{array.Length} Säljare har nått nivå {level}: {SellerLevelArticlesSold(level)} Artiklar\n\n";
                 }
             }
         }
@@ -60,6 +60,14 @@ namespace Inlämningsuppgift_2
             }
         }
 
+        private string SellerLevelArticlesSold(int level)
+        {
+            if (level == 4) { return "över 199"; }
+            else if (level == 3) { return "100-199"; }
+            else if (level == 2) { return "50-99"; }
+            else { return "under 50"; }
+        }
+
         private void WriteToDb(Seller seller)
         {
             string db = ReadFile();
@@ -70,34 +78,49 @@ namespace Inlämningsuppgift_2
             return;
         }
 
-        private bool WriteToFile(string content)
+        private void WriteToFile(string content)
         {
-            try
-            {
-                File.WriteAllText("db.json", content);
-                return true;
-            } 
-            catch
-            {
-                return false;
-            }
+            File.WriteAllText("db.json", content);
         }
 
         private void RegisterBtn_Click(object sender, EventArgs e)
         {
-            string name = NameTB.Text;
-            string pnr = PnrTB.Text;
-            string district = DistrictTB.Text;
-            int soldArticles = int.Parse(SoldArticlesTB.Text);
-            Seller seller = new Seller(name, pnr, district, soldArticles);
-            WriteToDb(seller);
-            StatusLabel.Text = "Säljare lades till.";
+            try
+            {
+                string name = NameTB.Text;
+                string pnr = PnrTB.Text;
+                string district = DistrictTB.Text;
+                int soldArticles = int.Parse(SoldArticlesTB.Text);
+                if (name == "")
+                {
+                    StatusLabel.Text = "En av textfälten var tomma eller innehöll fel datatyp.";
+                    return;
+                } 
+                else if (pnr == "")
+                {
+                    StatusLabel.Text = "En av textfälten var tomma eller innehöll fel datatyp.";
+                    return;
+                } 
+                else if (district == "")
+                {
+                    StatusLabel.Text = "En av textfälten var tomma eller innehöll fel datatyp.";
+                    return;
+                }
+                Seller seller = new Seller(name, pnr, district, soldArticles);
+                WriteToDb(seller);
+                StatusLabel.Text = "Säljare lades till.";
 
-            NameTB.Text = "";
-            PnrTB.Text = "";
-            DistrictTB.Text = "";
-            SoldArticlesTB.Text = "";
-            DataLabel.Text = "";
+                NameTB.Text = "";
+                PnrTB.Text = "";
+                DistrictTB.Text = "";
+                SoldArticlesTB.Text = "";
+                DataLabel.Text = "";
+            }
+            catch
+            {
+                StatusLabel.Text = "En av textfälten var tomma eller innehöll fel datatyp.";
+                return;
+            }
         }
 
         private void ExitBtn_Click(object sender, EventArgs e)
@@ -107,6 +130,7 @@ namespace Inlämningsuppgift_2
 
         private void ShowStatsBtn_Click(object sender, EventArgs e)
         {
+            DataLabel.Text = "";
             string db = ReadFile();
             Seller[] dbArray = JsonConvert.DeserializeObject<Seller[]>(db);
             Array.Sort(dbArray, (a, b) => b.SoldArticles - a.SoldArticles);
