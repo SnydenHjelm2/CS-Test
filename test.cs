@@ -23,7 +23,6 @@ namespace Inlämningsuppgift_2
             string db = ReadFile();
             //Om databasen är tom (dvs att JSON strängen inte innehåller några tecken) så skrivs "[]" till filen genom funktionen WriteToFile, detta för att filen alltid ska innehålla en array.
             if (db.Length == 0) { WriteToFile("[]"); }
-            DataLabel.Text = "wassup";
         }
 
         //Funktion som används för att skriva ut säljarinformationen till applikationen.Till denna funktion skickas säljarnas nivå och en array av Seller instanser
